@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <script type="text/javascript" src="tsp.js"></script>
+    <link href="http://fonts.googleapis.com/css?family=Aclonica" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js"></script>
+
+  </head>
+  <body style="background:#000;color:#fff;font-family:Consolas;">
+    <div id="full" style="width:100%;height:100%">
+      <div style="padding:5pt;background:linear-gradient(0deg,#555,#000)">
+        <span style="font-size:20pt;font-family:Aclonica;">Handmade TSP</span>
+        <span style="font-size:15pt;padding-left:5px;cursor:pointer" onclick="load(0)">small5</span>
+        <span style="font-size:15pt;padding-left:5px;cursor:pointer" onclick="load(1)">rand20</span>
+        <span style="font-size:15pt;padding-left:5px;cursor:pointer" onclick="load(2)">tsp225</span>
+        <span style="font-size:15pt;padding-left:5px;cursor:pointer" onclick="load(3)">rand1000</span>
+        <span style="font-size:15pt;padding-left:5px;cursor:pointer" onclick="load(4)">tech30000</span>
+      </div>
+      <canvas id="canvas" style="width:100%"></canvas>
+      <textarea id="input" autofocus="" style="font-family:Consolas;width:100%;height:50pt;font-size:10pt;resize:none;background:#111;color:#fff;border-color:#777" onkeydown="draw()" onkeyup="draw()"></textarea>
+    </div>
+  </body>
+</html>
