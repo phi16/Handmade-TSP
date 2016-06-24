@@ -147,12 +147,12 @@ var LoadFrom = (url,cb)=>{
       cb(this.responseText);
     }
   };
-  xhr.open('GET',url);
+  xhr.open('GET',"/Handmade-TSP"+url);
   xhr.send();
 };
 
 function initialize(){
-  var au = ["/small5.in","/rand20.in","/tsp225.in","/rand1000.in","tech30000.in"];
+  var au = ["/small5.in","/rand20.in","/tsp225.in","/rand1000.in","/tech30000.in"];
   var cnt = 0;
   au.forEach((v,i)=>{
     LoadFrom(v,((i)=>(x)=>{
