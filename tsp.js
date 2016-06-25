@@ -526,7 +526,12 @@ window.onload = ()=>{
   draw();
 };
 
-window.oncontextmenu=()=>false;
+window.oncontextmenu = (e)=>{
+  var cvs = document.getElementById("canvas").getBoundingClientRect();
+  var y = e.clientY-cvs.top;
+  if(y<0 || y>cvs.height)return true;
+  return false;
+}
 var drag=false,dragX,dragY;
 var lClick = false;
 window.onmousedown = (e)=>{
