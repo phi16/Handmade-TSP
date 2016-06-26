@@ -123,6 +123,9 @@ var TSP = (()=>{
   var enableNumber = true;
   var busy = false;
 
+  var minScore = -1;
+  var minPath = null;
+
   var errMsg = "";
 
   t.available = ()=>{
@@ -135,7 +138,12 @@ var TSP = (()=>{
   t.load = (x)=>{
     points = defPoints[x];
     origin = {x:defOrigins[x].x,y:defOrigins[x].y,z:defOrigins[x].z};
-    caseName = ["small5","rand20","tsp225","rand1000","tech30000"][x];
+    var cn = ["small5","rand20","tsp225","rand1000","tech30000"][x];
+    if(cn != caseName){
+      caseName = cn;
+      minScore = -1;
+      minPath = null;
+    }
     t.calc();
   };
   t.switchNum = ()=>{
@@ -272,8 +280,15 @@ var TSP = (()=>{
       complete = true;
       sc += t.dist(path[0][0],path[0][path[0].length-1]);
     }
-    if(ok)score = sc;
-    else invalid = true,score = 0;
+    if(ok){
+      score = sc;
+      if(complete){
+        if(minScore == -1 || minScore > score){
+          minScore = score;
+          minPath = JSON.parse(JSON.stringify(path));
+        }
+      }
+    }else invalid = true,score = 0;
     if(draw)draw();
   };
   t.nearest = (x,y,r)=>{
@@ -403,6 +418,14 @@ var TSP = (()=>{
       p[k] = m;
     }
     path = [p];
+    t.reflect();
+    t.calc();
+  };
+  t.minScore = ()=>{
+    return minScore;
+  };
+  t.overrideMinimum = ()=>{
+    path = JSON.parse(JSON.stringify(minPath));
     t.reflect();
     t.calc();
   };
@@ -727,6 +750,10 @@ window.onload = ()=>{
           R.text("2-opt",10,cvs.height-70,30);
         }
         //R.text("SA",10,cvs.height-100,30);
+        R.base(1,-1);
+        if(TSP.minScore()!=-1){
+          R.text("Minimum:"+TSP.minScore(),cvs.width-10,10,30);
+        }
         var r = TSP.render(R);
         var k1 = R.translatedY(cvs.width/2,cvs.height/2,function*(){
           var k2 = R.scaledY(1/origin.z,function*(){
@@ -789,6 +816,10 @@ window.onmousedown = (e)=>{
         if(TSP.nning())TSP.stopNN();
         else if(TSP.available())TSP.nearestNeighbor();
       }
+    }else if(10<y && y<50){
+      if(x>cvs.width-200 && TSP.minScore()!=-1){
+        TSP.overrideMinimum();
+      }
     }
     Operate.click(e.clientX,e.clientY);
     lClick = true;
@@ -818,6 +849,10 @@ window.onmousemove = (e)=>{
         if(x<190)document.body.style.cursor = "pointer";
       }else if(y>cvs.height-40 && y<cvs.height-10){
         if(x<250)document.body.style.cursor = "pointer";
+      }else if(10<y && y<50){
+        if(x>cvs.width-200 && TSP.minScore()!=-1){
+         　document.body.style.cursor = "pointer";
+        }
       }
     }
   }
