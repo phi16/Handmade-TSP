@@ -378,6 +378,19 @@ var TSP = (()=>{
     t.reflect();
     t.calc();
   };
+  t.deleteWithConnect = (i)=>{
+    var p = pathIxs[i];
+    path[p.i].splice(p.j,1);
+    var p2 = path[p.i].splice(p.j,path[p.i].length-p.j);
+    if(p2.length>0){
+      path[p.i] = path[p.i].concat(p2);
+    }
+    if(path[p.i].length==0){
+      path.splice(p.i,1);
+    }
+    t.reflect();
+    t.calc();
+  };
   t.onBound = (i)=>{
     if(pathIxs[i].j == 0 || pathIxs[i].j == path[pathIxs[i].i].length-1){
       return true;
@@ -431,7 +444,141 @@ var TSP = (()=>{
   };
   (()=>{
     var ti = null;
-    t.opt = ()=>{
+    t.opt4 = ()=>{
+      busy = true;
+      var count = (()=>{
+        var c = 0;
+        return ()=>{
+          c++;
+          return c%100==0;
+        }
+      })();
+      var kon = (function*(){
+        while(1){
+          var done = true;
+          for(var i=0;i<path.length;i++){
+            if(path[i].length==1)continue;
+            for(var j=0;j<path[i].length-1;j++){
+              for(var k=j+2;k<path[i].length-1;k++){
+                for(var l=k+2;l<path[i].length-1;l++){
+                  for(var m=l+2;m<path[i].length-1;m++){
+                    var cd = 0;
+                    cd -= t.dist(path[i][j],path[i][j+1]) + t.dist(path[i][k],path[i][k+1]) + t.dist(path[i][l],path[i][l+1]) + t.dist(path[i][m],path[i][m+1]);
+                    cd += t.dist(path[i][j],path[i][l+1]) + t.dist(path[i][m],path[i][k+1]) + t.dist(path[i][l],path[i][j+1]) + t.dist(path[i][k],path[i][m+1]);
+                    if(cd < 0){
+                      done = false;
+                      var he = path[i].slice(0,j+1);
+                      var s1 = path[i].slice(j+1,k+1);
+                      var s2 = path[i].slice(k+1,l+1);
+                      var s3 = path[i].slice(l+1,m+1);
+                      var tl = path[i].slice(m+1,path[i].length);
+                      path[i] = [].concat(he,s3,s2,s1,tl);
+                      if(count())yield;
+                    }
+                  }
+                  if(count())yield;
+                }
+              }
+            }
+          }
+          if(done)break;
+          yield;
+        }
+      })();
+      ti = setInterval(()=>{
+        if(kon.next().done){
+          busy = false;
+          clearInterval(ti);
+          ti = null;
+        }
+        t.reflect();
+        t.calc();
+      },30);
+    };
+    t.opt4ing = ()=>{
+      return ti!=null;
+    };
+    t.stopOpt4 = ()=>{
+      busy = false;
+      clearInterval(ti);
+      ti = null;
+      t.reflect();
+      t.calc();
+    };
+  })();
+  (()=>{
+    var ti = null;
+    t.opt3 = ()=>{
+      busy = true;
+      var count = (()=>{
+        var c = 0;
+        return ()=>{
+          c++;
+          return c%100==0;
+        }
+      })();
+      var kon = (function*(){
+        while(1){
+          var done = true;
+          for(var i=0;i<path.length;i++){
+            if(path[i].length==1)continue;
+            for(var j=0;j<path[i].length-1;j++){
+              for(var k=j+2;k<path[i].length-1;k++){
+                for(var l=k+2;l<path[i].length-1;l++){
+                  var cd = t.dist(path[i][j],path[i][j+1]) + t.dist(path[i][k],path[i][k+1]) + t.dist(path[i][l],path[i][l+1]);
+                  var c1 = t.dist(path[i][j+1],path[i][k+1]) + t.dist(path[i][k],path[i][l+1]) + t.dist(path[i][l],path[i][j]);
+                  var c2 = t.dist(path[i][j],path[i][k+1]) + t.dist(path[i][k],path[i][l+1]) + t.dist(path[i][l],path[i][j+1]);
+                  if(c1<c2 && c1-cd < 0){
+                    done = false;
+                    var he = path[i].slice(0,j+1);
+                    var s1 = path[i].slice(j+1,k+1);
+                    var s2 = path[i].slice(k+1,l+1).reverse();
+                    var tl = path[i].slice(l+1,path[i].length);
+                    path[i] = [].concat(he,s2,s1,tl);
+                    if(count())yield;
+                  }
+                  if(c2<c1 && c2-cd < 0){
+                    done = false;
+                    var he = path[i].slice(0,j+1);
+                    var s1 = path[i].slice(j+1,k+1);
+                    var s2 = path[i].slice(k+1,l+1);
+                    var tl = path[i].slice(l+1,path[i].length);
+                    path[i] = [].concat(he,s2,s1,tl);
+                    if(count())yield;
+                  }
+                }
+                if(count())yield;
+              }
+            }
+          }
+          if(done)break;
+          yield;
+        }
+      })();
+      ti = setInterval(()=>{
+        if(kon.next().done){
+          busy = false;
+          clearInterval(ti);
+          ti = null;
+        }
+        t.reflect();
+        t.calc();
+      },30);
+    };
+    t.opt3ing = ()=>{
+      return ti!=null;
+    };
+    t.stopOpt3 = ()=>{
+      busy = false;
+      clearInterval(ti);
+      ti = null;
+      t.reflect();
+      t.calc();
+    };
+  })();
+  (()=>{
+    var ti = null;
+    t.opt2 = ()=>{
       busy = true;
       var count = (()=>{
         var c = 0;
@@ -488,10 +635,61 @@ var TSP = (()=>{
         t.calc();
       },30);
     };
-    t.opting = ()=>{
+    t.opt2ing = ()=>{
       return ti!=null;
     };
-    t.stopOpt = ()=>{
+    t.stopOpt2 = ()=>{
+      busy = false;
+      clearInterval(ti);
+      ti = null;
+      t.reflect();
+      t.calc();
+    };
+  })();
+  (()=>{
+    var ti = null;
+    t.rejoin = ()=>{
+      busy = true;
+      var count = (()=>{
+        var c = 0;
+        return ()=>{
+          c++;
+          return c%2==0;
+        }
+      })();
+      var kon = (function*(){
+        while(1){
+          var done = true;
+          for(var i=0;i<path.length;i++){
+            for(var j=0;j<path[i].length;j++){
+              var s = score;
+              var e = path[i][j];
+              t.deleteWithConnect(e);
+              t.insert(e);
+              if(score < s){
+                done = false;
+              }
+              if(count())yield;
+            }
+          }
+          if(done)break;
+          yield;
+        }
+      })();
+      ti = setInterval(()=>{
+        if(kon.next().done){
+          busy = false;
+          clearInterval(ti);
+          ti = null;
+        }
+        t.reflect();
+        t.calc();
+      },30);
+    };
+    t.rejoining = ()=>{
+      return ti!=null;
+    };
+    t.stopRejoin = ()=>{
       busy = false;
       clearInterval(ti);
       ti = null;
@@ -688,6 +886,9 @@ function initOpe(){
               if(TSP.onBound(lastPos)){
                 TSP.delete(lastPos);
                 TSP.insert(lastPos);
+              }else{
+                TSP.deleteWithConnect(lastPos);
+                TSP.insert(lastPos);
               }
               onWait = false;
               dcTimer = 0;
@@ -696,6 +897,9 @@ function initOpe(){
         }else{
           if(TSP.onBound(lastPos)){
             TSP.delete(lastPos);
+            TSP.insert(lastPos);
+          }else{
+            TSP.deleteWithConnect(lastPos);
             TSP.insert(lastPos);
           }
           onWait = false;
@@ -744,12 +948,27 @@ window.onload = ()=>{
           R.text("NearestNeighbor",10,cvs.height-10,30);
         }
         R.text("RandomPath",10,cvs.height-40,30);
-        if(TSP.opting()){
-          R.text("[2-opt]",10,cvs.height-70,30);
+        if(TSP.opt4ing()){
+          R.text("[4-opt]",10,cvs.height-70,30);
         }else{
-          R.text("2-opt",10,cvs.height-70,30);
+          R.text("4-opt",10,cvs.height-70,30);
         }
-        //R.text("SA",10,cvs.height-100,30);
+        if(TSP.opt3ing()){
+          R.text("[3-opt]",10,cvs.height-100,30);
+        }else{
+          R.text("3-opt",10,cvs.height-100,30);
+        }
+        if(TSP.opt2ing()){
+          R.text("[2-opt]",10,cvs.height-130,30);
+        }else{
+          R.text("2-opt",10,cvs.height-130,30);
+        }
+        if(TSP.rejoining()){
+          R.text("[Rejoin]",10,cvs.height-160,30);
+        }else{
+          R.text("Rejoin",10,cvs.height-160,30);
+        }
+        //R.text("SA",10,cvs.height-190,30);
         R.base(1,-1);
         if(TSP.minScore()!=-1){
           R.text("Minimum:"+TSP.minScore(),cvs.width-10,10,30);
@@ -802,17 +1021,32 @@ window.onmousedown = (e)=>{
     dragY = e.clientY;
   }else{
     var x = e.clientX;
-    if(y>cvs.height-140 && y<cvs.height-110){
+    if(y>cvs.height-220 && y<cvs.height-190){
       //if(x<60 && TSP.available())TSP.SA();
-    }else if(y>cvs.height-110 && y<cvs.height-70){
+    }else if(y>cvs.height-190 && y<cvs.height-160){
+      if(x<130){
+        if(TSP.rejoining())TSP.stopRejoin();
+        else if(TSP.available())TSP.rejoin();
+      }
+    }else if(y>cvs.height-160 && y<cvs.height-130){
       if(x<110){
-        if(TSP.opting())TSP.stopOpt();
-        else if(TSP.available())TSP.opt();
+        if(TSP.opt2ing())TSP.stopOpt2();
+        else if(TSP.available())TSP.opt2();
+      }
+    }else if(y>cvs.height-130 && y<cvs.height-100){
+      if(x<110){
+        if(TSP.opt3ing())TSP.stopOpt3();
+        else if(TSP.available())TSP.opt3();
+      }
+    }else if(y>cvs.height-100 && y<cvs.height-70){
+      if(x<110){
+        if(TSP.opt4ing())TSP.stopOpt4();
+        else if(TSP.available())TSP.opt4();
       }
     }else if(y>cvs.height-70 && y<cvs.height-40){
       if(x<190 && TSP.available())TSP.randomPath();
     }else if(y>cvs.height-40 && y<cvs.height-10){
-      if(x<250){
+      if(x<270){
         if(TSP.nning())TSP.stopNN();
         else if(TSP.available())TSP.nearestNeighbor();
       }
@@ -841,14 +1075,20 @@ window.onmousemove = (e)=>{
       var y = e.clientY-cvs.top;
       var x = e.clientX;
       document.body.style.cursor = "auto";
-      if(y>cvs.height-140 && y<cvs.height-110){
+      if(y>cvs.height-220 && y<cvs.height-190){
         //if(x<60)document.body.style.cursor = "pointer";
-      }else if(y>cvs.height-110 && y<cvs.height-70){
+      }else if(y>cvs.height-190 && y<cvs.height-160){
+        if(x<130)document.body.style.cursor = "pointer";
+      }else if(y>cvs.height-160 && y<cvs.height-130){
+        if(x<110)document.body.style.cursor = "pointer";
+      }else if(y>cvs.height-130 && y<cvs.height-100){
+        if(x<110)document.body.style.cursor = "pointer";
+      }else if(y>cvs.height-100 && y<cvs.height-70){
         if(x<110)document.body.style.cursor = "pointer";
       }else if(y>cvs.height-70 && y<cvs.height-40){
         if(x<190)document.body.style.cursor = "pointer";
       }else if(y>cvs.height-40 && y<cvs.height-10){
-        if(x<250)document.body.style.cursor = "pointer";
+        if(x<270)document.body.style.cursor = "pointer";
       }else if(10<y && y<50){
         if(x>cvs.width-200 && TSP.minScore()!=-1){
          　document.body.style.cursor = "pointer";
@@ -858,6 +1098,11 @@ window.onmousemove = (e)=>{
   }
 };
 window.onmouseup = (e)=>{
+  if(!drag){
+    var cvs = document.getElementById("canvas").getBoundingClientRect();
+    var y = e.clientY-cvs.top;
+    if(y<0 || y>cvs.height)return;
+  }
   if(e.button==2){
     drag = false;
   }else{
@@ -872,9 +1117,9 @@ window.onmousewheel = (e)=>{
   origin.x += (e.clientX-cvs.left-cvs.width/2) * origin.z;
   origin.y += (e.clientY-cvs.top-cvs.height/2) * origin.z;
   if(e.wheelDelta < 0){
-    origin.z *= 1.1;
+    origin.z *= 1.2;
   }else{
-    origin.z /= 1.1;
+    origin.z /= 1.2;
   }
   origin.x -= (e.clientX-cvs.left-cvs.width/2) * origin.z;
   origin.y -= (e.clientY-cvs.top-cvs.height/2) * origin.z;
