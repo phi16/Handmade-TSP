@@ -442,6 +442,31 @@ var TSP = (()=>{
     t.reflect();
     t.calc();
   };
+  t.deleteLongest = ()=>{
+    var i = -1, j = 0, l = 0;
+    path.forEach((v,ip)=>{
+      for(var k=0;k<v.length-1;k++){
+        var le = t.dist(v[k],v[k+1]);
+        if(i==-1 || le > l){
+          i = ip, j = k, l = le;
+        }
+      }
+    });
+    if(i!=-1){
+      if(path[i].length==2)path.splice(i,1);
+      else{
+        var p2 = path[i].splice(j+1,path[i].length-j-1);
+        if(p2.length>1){
+          path.push(p2);
+        }
+        if(path[i].length==1){
+          path.splice(i,1);
+        }
+      }
+    }
+    t.reflect();
+    t.calc();
+  };
   (()=>{
     var ti = null;
     t.opt4 = ()=>{
@@ -947,28 +972,29 @@ window.onload = ()=>{
         }else{
           R.text("NearestNeighbor",10,cvs.height-10,30);
         }
-        R.text("RandomPath",10,cvs.height-40,30);
+        R.text("DeleteLongest",10,cvs.height-40,30);
+        R.text("RandomPath",10,cvs.height-70,30);
         if(TSP.opt4ing()){
-          R.text("[4-opt]",10,cvs.height-70,30);
+          R.text("[4-opt]",10,cvs.height-100,30);
         }else{
-          R.text("4-opt",10,cvs.height-70,30);
+          R.text("4-opt",10,cvs.height-100,30);
         }
         if(TSP.opt3ing()){
-          R.text("[3-opt]",10,cvs.height-100,30);
+          R.text("[3-opt]",10,cvs.height-130,30);
         }else{
-          R.text("3-opt",10,cvs.height-100,30);
+          R.text("3-opt",10,cvs.height-130,30);
         }
         if(TSP.opt2ing()){
-          R.text("[2-opt]",10,cvs.height-130,30);
+          R.text("[2-opt]",10,cvs.height-160,30);
         }else{
-          R.text("2-opt",10,cvs.height-130,30);
+          R.text("2-opt",10,cvs.height-160,30);
         }
         if(TSP.rejoining()){
-          R.text("[Rejoin]",10,cvs.height-160,30);
+          R.text("[Rejoin]",10,cvs.height-190,30);
         }else{
-          R.text("Rejoin",10,cvs.height-160,30);
+          R.text("Rejoin",10,cvs.height-190,30);
         }
-        //R.text("SA",10,cvs.height-190,30);
+        //R.text("SA",10,cvs.height-220,30);
         R.base(1,-1);
         if(TSP.minScore()!=-1){
           R.text("Minimum:"+TSP.minScore(),cvs.width-10,10,30);
@@ -1021,30 +1047,32 @@ window.onmousedown = (e)=>{
     dragY = e.clientY;
   }else{
     var x = e.clientX;
-    if(y>cvs.height-220 && y<cvs.height-190){
+    if(y>cvs.height-250 && y<cvs.height-220){
       //if(x<60 && TSP.available())TSP.SA();
-    }else if(y>cvs.height-190 && y<cvs.height-160){
+    }else if(y>cvs.height-220 && y<cvs.height-190){
       if(x<130){
         if(TSP.rejoining())TSP.stopRejoin();
         else if(TSP.available())TSP.rejoin();
       }
-    }else if(y>cvs.height-160 && y<cvs.height-130){
+    }else if(y>cvs.height-190 && y<cvs.height-160){
       if(x<110){
         if(TSP.opt2ing())TSP.stopOpt2();
         else if(TSP.available())TSP.opt2();
       }
-    }else if(y>cvs.height-130 && y<cvs.height-100){
+    }else if(y>cvs.height-160 && y<cvs.height-130){
       if(x<110){
         if(TSP.opt3ing())TSP.stopOpt3();
         else if(TSP.available())TSP.opt3();
       }
-    }else if(y>cvs.height-100 && y<cvs.height-70){
+    }else if(y>cvs.height-130 && y<cvs.height-100){
       if(x<110){
         if(TSP.opt4ing())TSP.stopOpt4();
         else if(TSP.available())TSP.opt4();
       }
-    }else if(y>cvs.height-70 && y<cvs.height-40){
+    }else if(y>cvs.height-100 && y<cvs.height-70){
       if(x<190 && TSP.available())TSP.randomPath();
+    }else if(y>cvs.height-70 && y<cvs.height-40){
+      if(x<270 && TSP.available())TSP.deleteLongest();
     }else if(y>cvs.height-40 && y<cvs.height-10){
       if(x<270){
         if(TSP.nning())TSP.stopNN();
@@ -1075,18 +1103,20 @@ window.onmousemove = (e)=>{
       var y = e.clientY-cvs.top;
       var x = e.clientX;
       document.body.style.cursor = "auto";
-      if(y>cvs.height-220 && y<cvs.height-190){
+      if(y>cvs.height-250 && y<cvs.height-220){
         //if(x<60)document.body.style.cursor = "pointer";
-      }else if(y>cvs.height-190 && y<cvs.height-160){
+      }else if(y>cvs.height-220 && y<cvs.height-190){
         if(x<130)document.body.style.cursor = "pointer";
+      }else if(y>cvs.height-190 && y<cvs.height-160){
+        if(x<110)document.body.style.cursor = "pointer";
       }else if(y>cvs.height-160 && y<cvs.height-130){
         if(x<110)document.body.style.cursor = "pointer";
       }else if(y>cvs.height-130 && y<cvs.height-100){
         if(x<110)document.body.style.cursor = "pointer";
       }else if(y>cvs.height-100 && y<cvs.height-70){
-        if(x<110)document.body.style.cursor = "pointer";
-      }else if(y>cvs.height-70 && y<cvs.height-40){
         if(x<190)document.body.style.cursor = "pointer";
+      }else if(y>cvs.height-70 && y<cvs.height-40){
+        if(x<270)document.body.style.cursor = "pointer";
       }else if(y>cvs.height-40 && y<cvs.height-10){
         if(x<270)document.body.style.cursor = "pointer";
       }else if(10<y && y<50){
